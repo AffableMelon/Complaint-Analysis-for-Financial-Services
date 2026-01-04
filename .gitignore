@@ -37,9 +37,11 @@ ENV/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-# notebooks/*.ipynb
+notebooks/*.ipynb
+notebooks/
 
 # Data
+notebooks/data/
 data/raw/*
 !data/raw/.gitkeep
 data/processed/*

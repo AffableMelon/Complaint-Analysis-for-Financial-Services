@@ -4,32 +4,47 @@ This project implements a Retrieval-Augmented Generation (RAG) chatbot to analyz
 
 ## Project Structure
 
-- `data/`: Contains raw and processed data.
-- `vector_store/`: Stores the persisted ChromaDB index.
-- `notebooks/`: Jupyter notebooks for EDA and experimentation.
-- `src/`: Source code for preprocessing, embedding, and the RAG application.
-- `app.py`: Gradio interface for the chatbot.
+- **`data/`**: Central storage for project data.
+  - `raw/`: Place the original `complaints.csv` here. (Ignored by git)
+  - `processed/`: Generated cleaned data (`filtered_complaints.csv`) is saved here. (Ignored by git)
+- **`vector_store/`**: Stores the persisted ChromaDB embeddings index. This directory is populated by the `build_vector_store.py` script. (Ignored by git)
+- **`notebooks/`**: Jupyter notebooks for Exploratory Data Analysis (EDA) and prototyping.
+- **`src/`**: Source code for preprocessing, embedding, and the RAG application.
+- **`app.py`**: Gradio interface for the chatbot.
 
-## Setup
+## Workflow & Setup
 
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 1. Environment Setup
+Create a virtual environment and install dependencies:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-2. Place the raw data in `data/raw/`.
+### 2. Data Preparation
+Place your raw dataset (`complaints.csv`) in the `data/raw/` directory.
 
-3. Run preprocessing:
-   ```bash
-   python src/eda_and_preprocessing.py
-   ```
+Run the preprocessing script to filter and clean the data:
+```bash
+python src/eda_and_preprocessing.py
+```
+*Output: `data/processed/filtered_complaints.csv`*
 
-4. Build the vector store:
-   ```bash
-   python src/build_vector_store.py
-   ```
+### 3. Vector Store Creation
+Generate embeddings and build the vector index:
+```bash
+python src/build_vector_store.py
+```
+*Output: Populates `vector_store/` directory with ChromaDB files.*
 
-5. Run the application:
-   ```bash
-   python app.py
-   ```
+### 4. Run the Application
+Launch the chatbot interface:
+```bash
+python app.py
+```
+Access the UI at the URL provided in the terminal (usually http://127.0.0.1:7860).
+
+## Configuration
+- **Data Paths**: Default paths are configured in the scripts (`data/raw/complaints.csv`, `data/processed/filtered_complaints.csv`).
+- **Embedding Model**: Uses `sentence-transformers/all-MiniLM-L6-v2` by default (configured in `src/build_vector_store.py` and `src/rag_pipeline.py`).
