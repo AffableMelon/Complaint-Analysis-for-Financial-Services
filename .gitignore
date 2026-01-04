@@ -37,7 +37,7 @@ ENV/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-notebooks/*.ipynb
+# notebooks/*.ipynb
 
 # Data
 data/raw/*
