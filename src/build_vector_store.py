@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from sklearn.model_selection import train_test_split
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
@@ -62,19 +63,31 @@ if __name__ == "__main__":
     VECTOR_STORE_PATH = "vector_store"
     
     # Sampling for Task 2 (as per instructions)
-    SAMPLE_SIZE = 10000
+    # Stratified sampling to 10K-15K complaints with proportional product representation
+    TARGET_SAMPLE_SIZE = 12500 
+    
+    # Chunking Configuration
+    CHUNK_SIZE = 1000
+    CHUNK_OVERLAP = 200
     
     print("Loading processed data...")
     try:
         df = load_processed_data(PROCESSED_DATA_PATH)
         
-        # Stratified sampling
-        print(f"Sampling {SAMPLE_SIZE} records...")
-        if len(df) > SAMPLE_SIZE:
-            df = df.groupby('normalized_product', group_keys=False).apply(lambda x: x.sample(min(len(x), int(SAMPLE_SIZE / 5))))
+        # Stratified sampling - Proportional
+        if len(df) > TARGET_SAMPLE_SIZE:
+            print(f"performing proportional stratified sampling to reduce to {TARGET_SAMPLE_SIZE} records...")
+            # Use train_test_split to get a stratified subset
+            df, _ = train_test_split(
+                df, 
+                train_size=TARGET_SAMPLE_SIZE, 
+                stratify=df['normalized_product'], 
+                random_state=42
+            )
+            print(f"Sampled dataset columns: {df['normalized_product'].value_counts(normalize=True)}")
         
-        print("Chunking text...")
-        documents = create_chunks(df)
+        print(f"Chunking text (Chunk Size: {CHUNK_SIZE}, Overlap: {CHUNK_OVERLAP})...")
+        documents = create_chunks(df, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
         print(f"Created {len(documents)} chunks.")
         
         build_vector_store(documents, VECTOR_STORE_PATH)

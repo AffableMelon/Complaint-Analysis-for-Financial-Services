@@ -97,7 +97,26 @@ def preprocess_data(input_path, output_path):
             first_chunk = False
             
         print(f"Saved processed data to {output_path}")
-        print("Done.")
+        
+        # --- Analysis Section ---
+        print("\n--- Processed Data Analysis ---")
+        # Load the fully processed dataset for analysis
+        df_processed = pd.read_csv(output_path)
+        
+        # 1. Product Distribution
+        print("\nProduct Distribution:")
+        distribution = df_processed['normalized_product'].value_counts(normalize=True) * 100
+        print(distribution.to_string(float_format="%.2f%%"))
+        print("\nCounts:")
+        print(df_processed['normalized_product'].value_counts())
+        
+        # 2. Narrative Length Analysis
+        print("\nNarrative Length Statistics (words):")
+        # Ensure cleaned_narrative is string and calculate length
+        narrative_lengths = df_processed['cleaned_narrative'].astype(str).apply(lambda x: len(x.split()))
+        print(narrative_lengths.describe())
+        
+        print("\nDone.")
 
     except FileNotFoundError:
         print("Data file not found. Please ensure data is in data/raw/")
