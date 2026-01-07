@@ -24,14 +24,18 @@ EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 # google/flan-t5-base
 LLM_MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct" 
 
-def get_retriever(vector_store_path: str = VECTOR_STORE_PATH, k: int = 5):
+def get_retriever(vector_store_path: str = VECTOR_STORE_PATH, k: int = 5, device: str = None):
     """
     Loads the Chroma vector store and returns a retriever.
     """
     if not os.path.exists(vector_store_path):
         raise FileNotFoundError(f"Vector store not found at {vector_store_path}")
 
-    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
+    model_kwargs = {}
+    if device:
+        model_kwargs["device"] = device
+
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL, model_kwargs=model_kwargs)
     
     # Initialize Chroma from existing directory
     vector_store = Chroma(
